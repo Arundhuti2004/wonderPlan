@@ -7,11 +7,12 @@ import {
   selectTravelersList,
 } from "../constants/option.jsx";
 import { Button } from "../components/ui/button";
-import { toast } from 'sonner';
+import { toast } from "sonner";
 import { chatSession } from "../service/AIModal.jsx";
 import { FcGoogle } from "react-icons/fc";
 import axios from "axios";
-
+import { db } from '../service/firebase.config.jsx';
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 import {
   Dialog,
@@ -19,50 +20,46 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
- 
 } from "@/components/ui/dialog";
 import { useGoogleLogin } from "@react-oauth/google";
 import { doc, setDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
-const CreateTrip=()=> {
+const CreateTrip = () => {
   const [place, setPlace] = useState();
-  const [openDailog, setOpenDailog]=useState(false);
+  const [openDailog, setOpenDailog] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState([]);
 
+  const navigate = useNavigate();
   const handleInputChange = (name, value) => {
     setFormData({
       ...formData,
       [name]: value,
-    })
-  }
+    });
+  };
   const login = useGoogleLogin({
-    onSuccess: (res) => { 
+    clientId:
+      "649691225300-knn9fuq471n4vvqmsqhu8b3a36aschaq.apps.googleusercontent.com",
+    onSuccess: (res) => {
       console.log(res);
-      
-      getUserProfile(res)},
-    onError: (err) => console.log(err)
-  })
+      getUserProfile(res);
+    },
+    onError: (err) => console.log(err),
+  });
 
   useEffect(() => {
     console.log(formData);
   }, [formData]);
 
-  
-
- 
-  
-
   const OnGenerateTrip = async () => {
+    const user = localStorage.getItem("user");
 
-    const user = localStorage.getItem('user');
-  
-
-    
     if (!user) {
-      setOpenDailog(false);
+      setOpenDailog(true);
       return;
     }
-  
+
     try {
       if (
         (formData?.noOfDays > 5 && !formData?.location) ||
@@ -73,38 +70,59 @@ const CreateTrip=()=> {
         toast("Please fill all details.");
         return;
       }
-
-      const FINAL_PROMPT = AI_PROMPT
-      .replace("{location}",formData?.location?.label )
+      setLoading(true);
+      const FINAL_PROMPT = AI_PROMPT.replace(
+        "{location}",
+        formData?.location?.label
+      )
         .replace("{totalDays}", formData?.noOfDays)
         .replace("{traveler}", formData?.traveler)
-        .replace("{budget}", formData?.budget );
+        .replace("{budget}", formData?.budget);
 
-      console.log("FINAL_PROMPT:", FINAL_PROMPT);
       const result = await chatSession.sendMessage(FINAL_PROMPT);
 
-      console.log(result?.response?.text());
+      console.log("__", result?.response?.text());
+      setLoading(false);
+      SaveAiTrip(result?.response?.text());
     } catch (err) {
       console.error("An error occurred:", err);
       toast("An unexpected error occurred. Please try again.");
     }
   };
-  
-  const getUserProfile = (tokenInfo) => {
-    axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenInfo.access_token}`, {
-      headers: {
-        Authorization: `Bearer ${tokenInfo?.acess_token}`,
-        Accept: 'Application/json'
-      }
 
-    }).then((res) => {
-      console.log(res);
-      localStorage.setItem('user', JSON.stringify(res.data))
-      setOpenDailog(false);
-      OnGenerateTrip();
-    })
-  }
-   
+  const SaveAiTrip = async (TripData) => {
+    setLoading(true);
+    const user = JSON.parse(localStorage.getItem("user"));
+    const docId = Date.now().toString();
+    await setDoc(doc(db, "AITrips", docId), {
+      userSelection: formData,
+      tripData: TripData,
+      userEmail: user?.email,
+      id: docId,
+    });
+    setLoading(false);
+    navigate('/view-trip/'+docId)
+  };
+
+  const getUserProfile = (tokenInfo) => {
+    axios
+      .get(
+        `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenInfo.access_token}`,
+        {
+          headers: {
+            Authorization: `Bearer ${tokenInfo?.acess_token}`,
+            Accept: "Application/json",
+          },
+        }
+      )
+      .then((res) => {
+        console.log(res);
+        localStorage.setItem("user", JSON.stringify(res.data));
+        setOpenDailog(false);
+        OnGenerateTrip();
+      });
+  };
+
   return (
     <>
       <div className="sm:px-10 md:px-32 lg:px-56 xl:px-72 px-5 mt-10">
@@ -188,20 +206,27 @@ const CreateTrip=()=> {
         </div>
 
         <div className="my-20 justify-end flex">
-          <Button onClick={OnGenerateTrip}>Generate Trip</Button>
+          <Button disabled={loading} onClick={OnGenerateTrip}>
+            {loading ? (
+              <AiOutlineLoading3Quarters className="w-7 h-7 animate-spin" />
+            ) : (
+              "Generate Trip"
+            )}
+          </Button>
         </div>
 
-        <Dialog open={openDailog} >
-          <DialogContent >
+        <Dialog open={openDailog}>
+          <DialogContent>
             <DialogHeader>
-                <DialogTitle>open</DialogTitle>   
+              <DialogTitle>open</DialogTitle>
               <DialogDescription>
                 <img src="/logo.svg" />
                 <h2 className="font-bold text-lg mt-7">Sign In With Google</h2>
                 <span>Sign in to the app with Google authentication </span>
                 <Button
                   onClick={login}
-                  className="w-full mt-5 flex gap-4 items-center">
+                  className="w-full mt-5 flex gap-4 items-center"
+                >
                   <FcGoogle className="h-7 w-7" />
                   Sign In With GOOGLE
                 </Button>
@@ -212,6 +237,6 @@ const CreateTrip=()=> {
       </div>
     </>
   );
-}
+};
 
 export default CreateTrip;
