@@ -20,7 +20,7 @@ function PlacesToVisit({ trip }) {
 
   return (
     <div>
-      <h2 className="font-bold text-lg">Places to Visit</h2>
+      <h2 className="font-bold text-lg mt-10">Places to Visit</h2>
       <div>
         {tripData.itinerary
           ? Object.entries(tripData.itinerary).map(([day, itineraryDetails]) => (

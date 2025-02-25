@@ -125,7 +125,7 @@ const CreateTrip = () => {
 
   return (
     <>
-      <div className="sm:px-10 md:px-32 lg:px-56 xl:px-72 px-5 mt-10">
+      <div className="sm:px-10 md:px-32 lg:px-56 xl:px-72 px-5 mt-10 ">
         <h1 className="font-bold text-3xl ">
           Tell us your travel preferences🌄🌴
         </h1>
@@ -168,7 +168,7 @@ const CreateTrip = () => {
                 <div
                   key={index}
                   onClick={() => handleInputChange("budget", item.title)}
-                  className={`p-4 border cursor-pointer rounded-lg hover: shadow-lg
+                  className={`p-4 border cursor-pointer rounded-lg hover:scale-105 shadow-md
                 ${formData?.budget == item.title && "shadow-lg border-black"}
                 `}
                 >
@@ -189,7 +189,7 @@ const CreateTrip = () => {
                 <div
                   key={index}
                   onClick={() => handleInputChange("traveler", item.people)}
-                  className={`p-4 border cursor-pointer rounded-lg hover: shadow-lg
+                  className={`p-4 border cursor-pointer rounded-lg hover:scale-105 shadow-md
                     ${
                       formData?.traveler == item.people &&
                       "shadow-lg border-black"
