@@ -4,6 +4,7 @@ import './index.css'
 import App from './App.jsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import CreateTrip from './create-trip/index.jsx'
+import ShareTrip from './share-trip/share.jsx'
 import Header from './components/custom/Header.jsx'
 import ReactDOM from 'react-dom/client'
 import React from 'react'
@@ -28,6 +29,11 @@ const router = createBrowserRouter([
   {
     path:'my-trips',
     element:<MyTrips/>
+  },
+  {
+    path:'/sharetrip',
+    element:<ShareTrip/>
+
   }
 ])
 

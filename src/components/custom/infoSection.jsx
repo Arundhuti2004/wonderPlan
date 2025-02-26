@@ -5,8 +5,13 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import { IoIosSend } from "react-icons/io";
 
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
-
+import { FacebookShareButton,FacebookIcon , WhatsappShareButton , WhatsappIcon,TelegramShareButton,TelegramIcon , LinkedinShareButton,LinkedinIcon,TwitterShareButton,TwitterIcon,ThreadsShareButton,ThreadsIcon} from 'react-share';
 function InfoSection({ trip }) {
   const [photoUrl,setPhotoUrl] = useState();
   useEffect(()=>{
@@ -52,13 +57,45 @@ function InfoSection({ trip }) {
           
         </div>
         <div className='flex justify-end mt-6'>
+        <Popover>
+        <PopoverTrigger>
         <span className=' p-2 m-4 px-3  bg-blue-700 dark:bg-blue-700 text-white dark:text-white font-bold rounded-sm flex flex-col hover:bg-blue-800 hover:text-slate-100'>
-            <button>🔗Share</button>
-            </span>
+          <button>🔗Share</button>
+        </span>
+        
+           
+        </PopoverTrigger>
+        <PopoverContent>
+          <FacebookShareButton url={'https://wonder-plan.vercel.app/view-trip/'+trip?.id} quote={"share  travel idea in facebook"} >
+          <FacebookIcon size={40} round={true}/>
+          </FacebookShareButton>
+          <WhatsappShareButton url={'https://wonder-plan.vercel.app/view-trip/'+trip?.id} quote={"share  travel idea in whatsapp"} >
+          <WhatsappIcon size={40} round={true}/>
+          </WhatsappShareButton>
+          <TelegramShareButton url={'https://wonder-plan.vercel.app/view-trip/'+trip?.id} quote={"share  travel idea in telegram"} >
+          <TelegramIcon size={40} round={true}/>
+          </TelegramShareButton>
+          <TwitterShareButton url={'https://wonder-plan.vercel.app/view-trip/'+trip?.id} quote={"share  travel idea in telegram"} >
+          <TwitterIcon size={40} round={true}/>
+          </TwitterShareButton>
+          <LinkedinShareButton url={'https://wonder-plan.vercel.app/view-trip/'+trip?.id} quote={"share  travel idea in telegram"} >
+          <LinkedinIcon size={40} round={true}/>
+          </LinkedinShareButton>
+          <ThreadsShareButton url={'https://wonder-plan.vercel.app/view-trip/'+trip?.id} quote={"share  travel idea in telegram"} >
+          <ThreadsIcon size={40} round={true}/>
+          </ThreadsShareButton>
+          
+        </PopoverContent>
+        
+        
+        
+        </Popover>
         </div>
       </div>
     </div>
   );
 }
+
+
 
 export default InfoSection;
