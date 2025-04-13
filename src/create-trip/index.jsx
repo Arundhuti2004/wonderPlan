@@ -39,8 +39,7 @@ const CreateTrip = () => {
     });
   };
   const login = useGoogleLogin({
-    clientId:
-      "649691225300-knn9fuq471n4vvqmsqhu8b3a36aschaq.apps.googleusercontent.com",
+   
     onSuccess: (res) => {
       console.log(res);
       getUserProfile(res);
@@ -62,7 +61,7 @@ const CreateTrip = () => {
 
     try {
       if (
-        (formData?.noOfDays > 5 && !formData?.location) ||
+        (formData?.noOfDays > 7 || !formData?.location) ||
         !formData?.budget ||
         !formData?.traveler ||
         !formData?.noOfDays
@@ -110,7 +109,7 @@ const CreateTrip = () => {
         `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenInfo.access_token}`,
         {
           headers: {
-            Authorization: `Bearer ${tokenInfo?.acess_token}`,
+            Authorization: `Bearer ${tokenInfo?.access_token}`,
             Accept: "Application/json",
           },
         }
